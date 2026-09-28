@@ -31,7 +31,8 @@ conductor status
   to one service. The first backend is YouTube Music, because it is the main
   contributor's subscription: it drives the
   [th-ch/youtube-music](https://github.com/th-ch/youtube-music) desktop
-  client through its API server plugin, bound to `127.0.0.1`.
+  client: its API server plugin (bound to `127.0.0.1`) for playback, and
+  its DevTools port (`--remote-debugging-port=9333`) to open an album.
 - **Keys**: the first target is a Linux desktop with GNOME, whose keyboard media keys
   are rebound to `conductor key <name>`.
 

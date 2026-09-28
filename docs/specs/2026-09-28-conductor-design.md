@@ -40,10 +40,15 @@ needs (read from `src/plugins/api-server/backend/routes/control.ts` on
 The plugin's default hostname is `0.0.0.0`; Conductor's setup instructions
 require `127.0.0.1`.
 
-Rejected for now: a dedicated Chrome window driven over the DevTools
-protocol. Every action would mean scraping YouTube Music's DOM, which
-breaks with each redesign. It stays the fallback if the desktop client
-proves unstable.
+The API server cannot start an album. Its queue edits are fire and
+forget: each track is fetched on its own and lands out of order, setting
+the queue index does not change the playing track, and after a queue clear
+the player stops obeying `next` (all observed on 2026-09-28). So the
+player is launched with `--remote-debugging-port=9333` (bound to
+`127.0.0.1`), and Conductor starts an album by opening its page over the
+DevTools protocol (`Page.navigate`). That is the only DevTools call: every
+other action goes through the API server, and nothing scrapes YouTube
+Music's DOM.
 
 ### D2. A local daemon and a CLI
 
@@ -73,20 +78,17 @@ root of the checkout. It is gitignored: each listener's moods, albums and
 agent ranks stay on their machine and never reach the repository.
 
 Each mood lists a few albums of the listener's service. To play a mood,
-Conductor picks one of its albums, has the backend enqueue its tracks,
-and, when the album runs out, the service's radio around that album: the
-service's own suggestions, which stay close to the mood and bring new
-music in.
+Conductor picks one of its albums and has the backend start it; when the
+album runs out, the service carries on with its own suggestions around
+it, which stay close to the mood and bring new music in.
 
-With YouTube Music, the backend reads the album's tracks with
-[ytmusicapi](https://github.com/sigma67/ytmusicapi) (`get_album`), clears
-the player's queue and enqueues them, then enqueues the album's radio:
-`get_watch_playlist(playlistId="RDAMPL" + audioPlaylistId)`. Asking for
-`radio=True` on the bare album playlist only returns the album again
-(checked 2026-09-28). The player API only enqueues
-single tracks by `videoId` (read from
-`backend/scheme/queue.ts`), hence ytmusicapi for album and radio lookups.
-ytmusicapi runs unauthenticated: it only reads the catalogue.
+With YouTube Music, the backend finds the album with
+[ytmusicapi](https://github.com/sigma67/ytmusicapi) (`search`, then
+`get_album`; unauthenticated, it only reads the catalogue) and opens
+`https://music.youtube.com/watch?v=<first track>&list=<audioPlaylistId>`
+(see D1). The album plays in order, then YouTube Music's autoplay takes
+over. That autoplay continuation has not been watched through to the end
+of an album yet.
 
 The repository ships `config.example.toml` with three illustrative moods
 (`calm`, the default; `stress`; `chore`) and neutral example albums; a
