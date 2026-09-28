@@ -18,6 +18,7 @@ class Track(NamedTuple):
     artist: str
     album: str | None = None
     is_paused: bool = False
+    is_song: bool = True
 
 
 class Player(Protocol):
@@ -151,6 +152,9 @@ class Conductor:
         mood, holder = self._target()
         if mood != self.current_mood:
             self._start(mood, holder)
+        elif not track.is_song:
+            self.log("skip", mood=self.current_mood, **_track_fields(track))
+            self.player.next()
 
     def status(self) -> dict:
         mood, holder = self._target()

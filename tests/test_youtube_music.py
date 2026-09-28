@@ -64,3 +64,21 @@ def test_load_opens_the_album_page_and_leaves_the_queue_alone():
 def test_now_playing_reads_the_song():
     track = RecordingYouTubeMusic().now_playing()
     assert (track.video_id, track.artist, track.title, track.is_paused) == ("a1", "A", "T", True)
+
+
+def test_only_audio_and_official_videos_count_as_songs():
+    ytm = RecordingYouTubeMusic()
+    for media_type, is_song in [
+        ("AUDIO", True),
+        ("ORIGINAL_MUSIC_VIDEO", True),
+        ("USER_GENERATED_CONTENT", False),
+        ("OTHER_VIDEO", False),
+        ("PODCAST_EPISODE", False),
+    ]:
+        ytm._call = lambda method, path, body=None, mt=media_type: {
+            "videoId": "v",
+            "title": "T",
+            "artist": "A",
+            "mediaType": mt,
+        }
+        assert ytm.now_playing().is_song is is_song, media_type

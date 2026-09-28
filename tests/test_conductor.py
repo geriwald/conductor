@@ -240,3 +240,21 @@ def test_unknown_key_is_refused(env):
     conductor, _, _, _ = env
     with pytest.raises(ValueError):
         conductor.key("eject")
+
+
+def test_a_video_that_is_not_a_song_is_skipped(env):
+    conductor, player, _, events = env
+    conductor.request("bravo", "calm", reason="quiet")
+    player.end_of_track()
+    player.track = player.track._replace(is_song=False)
+    conductor.tick()
+    assert player.calls[-1] == ("next",)
+    assert events[-1]["event"] == "skip"
+
+
+def test_a_song_is_not_skipped(env):
+    conductor, player, _, _ = env
+    conductor.request("bravo", "calm", reason="quiet")
+    player.end_of_track()
+    conductor.tick()
+    assert ("next",) not in player.calls

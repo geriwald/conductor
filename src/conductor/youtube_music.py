@@ -12,6 +12,8 @@ from pathlib import Path
 from conductor.core import Track
 
 CLIENT_ID = "conductor"
+# Audio tracks, and official videos (played as audio when the player prefers songs).
+SONG_TYPES = {"AUDIO", "ORIGINAL_MUSIC_VIDEO"}
 
 
 def album_page(catalog, album: str) -> tuple[str, str]:
@@ -87,6 +89,7 @@ class YouTubeMusic:
             artist=song["artist"],
             album=song.get("album"),
             is_paused=bool(song.get("isPaused")),
+            is_song=song.get("mediaType", "AUDIO") in SONG_TYPES,
         )
 
     def _call(self, method: str, path: str, body: dict | None = None):
