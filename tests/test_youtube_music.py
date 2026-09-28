@@ -1,4 +1,4 @@
-from conductor.youtube_music import YouTubeMusic, album_url
+from conductor.youtube_music import YouTubeMusic, album_page
 
 
 class FakeCatalog:
@@ -11,17 +11,26 @@ class FakeCatalog:
 
     def get_album(self, browse_id):
         assert browse_id in ("MPREb_found", "MPREb_given")
-        return {"audioPlaylistId": "OLAK5uy_x", "tracks": [{"videoId": "a1"}, {"videoId": "a2"}]}
+        return {
+            "title": "Some Album",
+            "audioPlaylistId": "OLAK5uy_x",
+            "tracks": [{"videoId": "a1"}, {"videoId": "a2"}],
+        }
 
 
 def test_an_album_opens_on_its_first_track_within_its_playlist():
-    url = album_url(FakeCatalog(), "Some Artist Some Album")
+    url, _ = album_page(FakeCatalog(), "Some Artist Some Album")
     assert url == "https://music.youtube.com/watch?v=a1&list=OLAK5uy_x"
+
+
+def test_the_window_is_named_after_the_album():
+    _, title = album_page(FakeCatalog(), "Some Artist Some Album")
+    assert title == "CONDUCTOR - Some Album"
 
 
 def test_a_browse_id_skips_the_search():
     catalog = FakeCatalog()
-    album_url(catalog, "MPREb_given")
+    album_page(catalog, "MPREb_given")
     assert catalog.searches == []
 
 
@@ -29,7 +38,10 @@ class RecordingYouTubeMusic(YouTubeMusic):
     def __init__(self):
         self.opened = []
         super().__init__(
-            "http://127.0.0.1:1", token="t", navigate=self.opened.append, catalog=FakeCatalog()
+            "http://127.0.0.1:1",
+            token="t",
+            navigate=lambda url, title: self.opened.append((url, title)),
+            catalog=FakeCatalog(),
         )
         self.calls = []
 
@@ -43,7 +55,9 @@ class RecordingYouTubeMusic(YouTubeMusic):
 def test_load_opens_the_album_page_and_leaves_the_queue_alone():
     ytm = RecordingYouTubeMusic()
     ytm.load("Some Artist Some Album")
-    assert ytm.opened == ["https://music.youtube.com/watch?v=a1&list=OLAK5uy_x"]
+    assert ytm.opened == [
+        ("https://music.youtube.com/watch?v=a1&list=OLAK5uy_x", "CONDUCTOR - Some Album")
+    ]
     assert not [c for c in ytm.calls if c[1] == "/queue"]
 
 

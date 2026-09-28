@@ -14,15 +14,16 @@ from conductor.core import Track
 CLIENT_ID = "conductor"
 
 
-def album_url(catalog, album: str) -> str:
-    """The album's first track, played within the album's playlist.
+def album_page(catalog, album: str) -> tuple[str, str]:
+    """The album's first track played within the album's playlist, and a window title.
 
     When the album ends, YouTube Music's autoplay carries on with its own suggestions.
     """
     browse_id = album if album.startswith("MPREb_") else _find_album(catalog, album)
     found = catalog.get_album(browse_id)
     first = found["tracks"][0]["videoId"]
-    return f"https://music.youtube.com/watch?v={first}&list={found['audioPlaylistId']}"
+    url = f"https://music.youtube.com/watch?v={first}&list={found['audioPlaylistId']}"
+    return url, f"CONDUCTOR - {found['title']}"
 
 
 def _find_album(catalog, query: str) -> str:
@@ -59,7 +60,7 @@ class YouTubeMusic:
         return cls(url, token_path.read_text().strip(), navigator(devtools_url))
 
     def load(self, album: str) -> None:
-        self.navigate(album_url(self.catalog, album))
+        self.navigate(*album_page(self.catalog, album))
 
     def play(self) -> None:
         self._call("POST", "/play")
