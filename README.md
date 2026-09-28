@@ -36,6 +36,17 @@ conductor status
 - **Keys**: the first target is a Linux desktop with GNOME, whose keyboard media keys
   are rebound to `conductor key <name>`.
 
+## Setup (Linux, systemd)
+
+1. Install the [th-ch/youtube-music](https://github.com/th-ch/youtube-music)
+   AppImage, sign in, and enable *Plugins → API Server* with hostname
+   `127.0.0.1`.
+2. `uv venv && uv pip install -e .` in this checkout, then
+   `cp config.example.toml config.toml` and pick your albums.
+3. `.venv/bin/conductor auth`, and accept the dialog in the player.
+4. `tools/install-systemd.sh /path/to/YouTube-Music.AppImage` starts the
+   player (with its DevTools port) and the daemon with your desktop session.
+
 A backend for another service (Spotify, Deezer, Apple Music, a local
 library…) or key handling for another desktop would be a welcome
 contribution: open an issue first.
