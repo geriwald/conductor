@@ -20,9 +20,15 @@ is logged so the heuristic can be judged against reality.
 
 ## Decisions
 
-### D1. Player: th-ch/youtube-music with its API server plugin
+### D1. Player: a backend interface, YouTube Music first
 
-The player is the open-source desktop client
+Conductor is not tied to one streaming service. The daemon talks to the
+player through a small backend interface (enqueue an album and its radio,
+play, pause, next, like, dislike, current track), and the arbitration and
+key logic never see which service is behind it. The first backend is
+YouTube Music, because it is the main contributor's subscription.
+
+The YouTube Music backend drives the open-source desktop client
 [th-ch/youtube-music](https://github.com/th-ch/youtube-music) (Electron,
 ~33.6k stars, active), logged into the listener's YouTube Music account,
 with its `api-server` plugin enabled. That plugin exposes what Conductor
@@ -60,20 +66,23 @@ An agent says *why* (`--reason`) and *what kind* (the mood); it never
 picks a track. The heuristic lives in one table the listener edits, and
 agents do not fight over individual songs.
 
-### D4. A mood is a set of YouTube Music albums, then their radio
+### D4. A mood is a set of albums, then their radio
 
 Moods are defined in the listener's config file, `config.toml` at the
 root of the checkout. It is gitignored: each listener's moods, albums and
-agent ranks stay on their machine and never reach the repository. Each mood lists
-a few YouTube Music albums. To play a mood, Conductor picks one of its
-albums, reads its tracks with
-[ytmusicapi](https://github.com/sigma67/ytmusicapi) (`get_album`), clears
-the player's queue and enqueues them. When the album runs out, it enqueues
-the album's radio (`get_watch_playlist(..., radio=True)`): YouTube Music's
-own suggestions around that album, which stay close to the mood and bring
-new music in.
+agent ranks stay on their machine and never reach the repository.
 
-The player API only enqueues single tracks by `videoId` (read from
+Each mood lists a few albums of the listener's service. To play a mood,
+Conductor picks one of its albums, has the backend enqueue its tracks,
+and, when the album runs out, the service's radio around that album: the
+service's own suggestions, which stay close to the mood and bring new
+music in.
+
+With YouTube Music, the backend reads the album's tracks with
+[ytmusicapi](https://github.com/sigma67/ytmusicapi) (`get_album`), clears
+the player's queue and enqueues them, then enqueues the album's radio
+(`get_watch_playlist(..., radio=True)`). The player API only enqueues
+single tracks by `videoId` (read from
 `backend/scheme/queue.ts`), hence ytmusicapi for album and radio lookups.
 ytmusicapi runs unauthenticated: it only reads the catalogue.
 
