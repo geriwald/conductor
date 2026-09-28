@@ -47,6 +47,8 @@ conductor status
 3. `.venv/bin/conductor auth`, and accept the dialog in the player.
 4. `tools/install-systemd.sh /path/to/YouTube-Music.AppImage` starts the
    player (with its DevTools port) and the daemon with your desktop session.
+5. On GNOME, `tools/gnome-media-keys.sh install` hands the media keys to
+   Conductor; `tools/gnome-media-keys.sh uninstall` gives them back.
 
 A backend for another service (Spotify, Deezer, Apple Music, a local
 library…) or key handling for another desktop would be a welcome
