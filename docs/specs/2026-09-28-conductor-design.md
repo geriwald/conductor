@@ -1,4 +1,4 @@
-# Conductor — AI agents choose your music, media keys answer back
+# Conductor — AI agents choose your music, keyboard media keys answer back
 
 Date: 2026-09-28
 Status: draft
@@ -14,7 +14,7 @@ When AI agents organize a person's work (long-running assistant sessions
 that hand out tasks, review requests, chores), they know what they are
 about to put in front of that person. Conductor lets them act on it: each
 agent can ask for a *mood*, Conductor arbitrates between agents and plays
-the music. The listener answers with the media keys, which become a
+the music. The listener answers with the media keys of their keyboard (play/pause, stop, next, previous), which become a
 feedback channel instead of plain transport controls, and every reaction
 is logged so the heuristic can be judged against reality.
 

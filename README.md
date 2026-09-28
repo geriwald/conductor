@@ -1,11 +1,11 @@
 # Conductor
 
-Let your AI agents choose your music, and answer them with your media keys.
+Let your AI agents choose your music, and answer them with your keyboard's media keys (play/pause, stop, next, previous).
 
 Agents that organize your work know what they are about to put in front of
 you: a hard review, a boring chore, a quiet stretch. Conductor lets each of
 them ask for a *mood*, arbitrates between them, and plays matching music on
-your streaming service. Your media keys become feedback: like, dislike,
+your streaming service. Your keyboard's media keys become feedback: like, dislike,
 "wrong music for right now", pause everything. Every reaction is logged, so
 you can check whether the moods actually fit.
 
@@ -29,7 +29,7 @@ conductor status
   contributor's subscription: it drives the
   [th-ch/youtube-music](https://github.com/th-ch/youtube-music) desktop
   client through its API server plugin, bound to `127.0.0.1`.
-- **Keys**: the first target is a Linux desktop with GNOME, whose media keys
+- **Keys**: the first target is a Linux desktop with GNOME, whose keyboard media keys
   are rebound to `conductor key <name>`.
 
 A backend for another service (Spotify, Deezer, Apple Music, a local
