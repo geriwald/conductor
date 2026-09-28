@@ -80,8 +80,10 @@ music in.
 
 With YouTube Music, the backend reads the album's tracks with
 [ytmusicapi](https://github.com/sigma67/ytmusicapi) (`get_album`), clears
-the player's queue and enqueues them, then enqueues the album's radio
-(`get_watch_playlist(..., radio=True)`). The player API only enqueues
+the player's queue and enqueues them, then enqueues the album's radio:
+`get_watch_playlist(playlistId="RDAMPL" + audioPlaylistId)`. Asking for
+`radio=True` on the bare album playlist only returns the album again
+(checked 2026-09-28). The player API only enqueues
 single tracks by `videoId` (read from
 `backend/scheme/queue.ts`), hence ytmusicapi for album and radio lookups.
 ytmusicapi runs unauthenticated: it only reads the catalogue.
@@ -144,11 +146,12 @@ mood, reason and current track. The stop / next / previous presses against
 ## Acceptance criteria
 
 1. `conductor mood chore --from bravo --reason test` makes a `chore` album
-   play within 5 s when nothing else holds the music.
+   play within 5 s when Conductor is idle (it has started nothing yet).
+   The daemon never starts music on its own when it boots.
 2. With `alpha` (ranked first) holding `stress` and `bravo` requesting
    `chore`, `stress` keeps playing; `conductor release --from alpha`
    switches to `chore` at the end of the current track.
-3. With no live request, the default mood plays.
+3. With no live request, the play/pause key plays the default mood.
 4. When the album runs out, its radio follows.
 5. Play/pause while playing stops the sound within half a second, and a
    later `conductor mood …` from any agent does not resume it; play/pause
