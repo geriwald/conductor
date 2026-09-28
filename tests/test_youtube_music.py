@@ -1,4 +1,4 @@
-from conductor.youtube_music import YouTubeMusic, build_queue
+from conductor.youtube_music import YouTubeMusic, album_url
 
 
 class FakeCatalog:
@@ -13,24 +13,24 @@ class FakeCatalog:
         assert browse_id in ("MPREb_found", "MPREb_given")
         return {"audioPlaylistId": "OLAK5uy_x", "tracks": [{"videoId": "a1"}, {"videoId": "a2"}]}
 
-    def get_watch_playlist(self, playlistId, limit):
-        assert playlistId == "RDAMPLOLAK5uy_x"
-        return {"tracks": [{"videoId": "a2"}, {"videoId": "r1"}, {"videoId": None}]}
 
-
-def test_queue_is_the_album_then_its_radio_without_repeats():
-    assert build_queue(FakeCatalog(), "Some Artist Some Album") == ["a1", "a2", "r1"]
+def test_an_album_opens_on_its_first_track_within_its_playlist():
+    url = album_url(FakeCatalog(), "Some Artist Some Album")
+    assert url == "https://music.youtube.com/watch?v=a1&list=OLAK5uy_x"
 
 
 def test_a_browse_id_skips_the_search():
     catalog = FakeCatalog()
-    build_queue(catalog, "MPREb_given")
+    album_url(catalog, "MPREb_given")
     assert catalog.searches == []
 
 
 class RecordingYouTubeMusic(YouTubeMusic):
     def __init__(self):
-        super().__init__("http://127.0.0.1:1", token="t", catalog=FakeCatalog())
+        self.opened = []
+        super().__init__(
+            "http://127.0.0.1:1", token="t", navigate=self.opened.append, catalog=FakeCatalog()
+        )
         self.calls = []
 
     def _call(self, method, path, body=None):
@@ -40,13 +40,11 @@ class RecordingYouTubeMusic(YouTubeMusic):
         return None
 
 
-def test_load_replaces_the_queue_and_plays_from_the_top():
+def test_load_opens_the_album_page_and_leaves_the_queue_alone():
     ytm = RecordingYouTubeMusic()
     ytm.load("Some Artist Some Album")
-    assert ytm.calls[0] == ("DELETE", "/queue", None)
-    added = [c[2]["videoId"] for c in ytm.calls if c[:2] == ("POST", "/queue")]
-    assert added == ["a1", "a2", "r1"]
-    assert ytm.calls[-2:] == [("PATCH", "/queue", {"index": 0}), ("POST", "/play", None)]
+    assert ytm.opened == ["https://music.youtube.com/watch?v=a1&list=OLAK5uy_x"]
+    assert not [c for c in ytm.calls if c[1] == "/queue"]
 
 
 def test_now_playing_reads_the_song():

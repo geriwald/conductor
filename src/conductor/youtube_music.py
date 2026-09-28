@@ -1,4 +1,8 @@
-"""YouTube Music backend: th-ch/youtube-music's API server plays, ytmusicapi reads the catalogue."""
+"""YouTube Music backend.
+
+th-ch/youtube-music plays: its page is opened over DevTools to start an album, and its
+API server does the rest. ytmusicapi reads the catalogue to find the album.
+"""
 
 import json
 import urllib.error
@@ -8,26 +12,17 @@ from pathlib import Path
 from conductor.core import Track
 
 CLIENT_ID = "conductor"
-RADIO_SIZE = 50
 
 
-def build_queue(catalog, album: str) -> list[str]:
-    """The album's tracks, then YouTube Music's radio around the album, without repeats."""
+def album_url(catalog, album: str) -> str:
+    """The album's first track, played within the album's playlist.
+
+    When the album ends, YouTube Music's autoplay carries on with its own suggestions.
+    """
     browse_id = album if album.startswith("MPREb_") else _find_album(catalog, album)
     found = catalog.get_album(browse_id)
-    tracks = list(found["tracks"])
-    # "RDAMPL" + the album's playlist is its radio; radio=True on the bare playlist
-    # only returns the album again (checked 2026-09-28).
-    radio = catalog.get_watch_playlist(
-        playlistId="RDAMPL" + found["audioPlaylistId"], limit=RADIO_SIZE
-    )
-    tracks += radio["tracks"]
-    queue: list[str] = []
-    for track in tracks:
-        video_id = track.get("videoId")
-        if video_id and video_id not in queue:
-            queue.append(video_id)
-    return queue
+    first = found["tracks"][0]["videoId"]
+    return f"https://music.youtube.com/watch?v={first}&list={found['audioPlaylistId']}"
 
 
 def _find_album(catalog, query: str) -> str:
@@ -45,9 +40,10 @@ def request_token(url: str) -> str:
 
 
 class YouTubeMusic:
-    def __init__(self, url: str, token: str, catalog=None):
+    def __init__(self, url: str, token: str, navigate, catalog=None):
         self.api = f"{url}/api/v1"
         self.token = token
+        self.navigate = navigate
         if catalog is None:
             from ytmusicapi import YTMusic
 
@@ -55,18 +51,15 @@ class YouTubeMusic:
         self.catalog = catalog
 
     @classmethod
-    def from_token_file(cls, url: str, token_path: Path) -> "YouTubeMusic":
+    def from_token_file(cls, url: str, devtools_url: str, token_path: Path) -> "YouTubeMusic":
+        from conductor.devtools import navigator
+
         if not token_path.exists():
             raise RuntimeError(f"no player token at {token_path}: run `conductor auth` first")
-        return cls(url, token_path.read_text().strip())
+        return cls(url, token_path.read_text().strip(), navigator(devtools_url))
 
     def load(self, album: str) -> None:
-        queue = build_queue(self.catalog, album)
-        self._call("DELETE", "/queue")
-        for video_id in queue:
-            self._call("POST", "/queue", {"videoId": video_id, "insertPosition": "INSERT_AT_END"})
-        self._call("PATCH", "/queue", {"index": 0})
-        self._call("POST", "/play")
+        self.navigate(album_url(self.catalog, album))
 
     def play(self) -> None:
         self._call("POST", "/play")

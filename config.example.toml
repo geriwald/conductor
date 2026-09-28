@@ -35,3 +35,5 @@ port = 7117
 [youtube_music]
 # The th-ch/youtube-music API server plugin; bind it to 127.0.0.1.
 url = "http://127.0.0.1:26538"
+# The player's DevTools port: launch it with --remote-debugging-port=9333.
+devtools = "http://127.0.0.1:9333"

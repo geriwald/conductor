@@ -15,6 +15,7 @@ class Config:
     override_ttl: float
     port: int
     youtube_music_url: str
+    devtools_url: str
 
 
 def load_config(path: Path = DEFAULT_PATH) -> Config:
@@ -35,4 +36,5 @@ def load_config(path: Path = DEFAULT_PATH) -> Config:
         override_ttl=raw.get("override_minutes", 60) * 60,
         port=raw.get("server", {}).get("port", 7117),
         youtube_music_url=raw.get("youtube_music", {}).get("url", "http://127.0.0.1:26538"),
+        devtools_url=raw.get("youtube_music", {}).get("devtools", "http://127.0.0.1:9333"),
     )

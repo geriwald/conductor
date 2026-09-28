@@ -115,7 +115,7 @@ def _serve(config) -> int:
     from conductor.youtube_music import YouTubeMusic
 
     conductor = Conductor(
-        YouTubeMusic.from_token_file(config.youtube_music_url, TOKEN_PATH),
+        YouTubeMusic.from_token_file(config.youtube_music_url, config.devtools_url, TOKEN_PATH),
         moods=config.moods,
         default_mood=config.default_mood,
         ranks=config.ranks,
