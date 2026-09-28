@@ -40,7 +40,8 @@ conductor status
 
 1. Install the [th-ch/youtube-music](https://github.com/th-ch/youtube-music)
    AppImage, sign in, and enable *Plugins → API Server* with hostname
-   `127.0.0.1`.
+   `127.0.0.1`. Enable *Plugins → Video Toggle* too and switch it to
+   *Song*, so official videos play as their audio version.
 2. `uv venv && uv pip install -e .` in this checkout, then
    `cp config.example.toml config.toml` and pick your albums.
 3. `.venv/bin/conductor auth`, and accept the dialog in the player.

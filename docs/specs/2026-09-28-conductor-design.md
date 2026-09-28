@@ -87,7 +87,13 @@ With YouTube Music, the backend finds the album with
 `get_album`; unauthenticated, it only reads the catalogue) and opens
 `https://music.youtube.com/watch?v=<first track>&list=<audioPlaylistId>`
 (see D1). The album plays in order, then YouTube Music's autoplay takes
-over. That autoplay continuation has not been watched through to the end
+over.
+
+Conductor plays songs, not videos. The player's *Video Toggle* plugin is
+set to prefer songs (`ATV_PREFERRED`), so an official music video plays
+as its audio version. Anything else the autoplay brings (user uploads,
+podcasts, other videos, which have no audio version) is skipped when it
+starts, and the skip is logged. That autoplay continuation has not been watched through to the end
 of an album yet.
 
 The repository ships `config.example.toml` with three illustrative moods
