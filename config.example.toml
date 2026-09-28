@@ -1,0 +1,37 @@
+# Copy this file to config.toml (gitignored) and make it yours.
+
+# The mood played when no agent holds the music.
+default_mood = "calm"
+
+# Agents in order of precedence; unlisted agents come after, latest request first.
+ranks = ["alpha", "bravo"]
+
+# How long an agent's request lives unless it passes --ttl.
+request_ttl_minutes = 90
+
+# How long the stop key's choice holds against agents.
+override_minutes = 60
+
+# Each mood is a few albums, written as you would search for them.
+# Conductor plays one of them, then the service's radio around it.
+# The order matters: the stop key moves to the next mood in this list.
+[moods]
+calm = [
+  "Brian Eno Music for Airports",
+  "Air Moon Safari",
+]
+stress = [
+  "The Chemical Brothers Dig Your Own Hole",
+  "Justice Cross",
+]
+chore = [
+  "Queen A Night at the Opera",
+  "Vivaldi The Four Seasons",
+]
+
+[server]
+port = 7117
+
+[youtube_music]
+# The th-ch/youtube-music API server plugin; bind it to 127.0.0.1.
+url = "http://127.0.0.1:26538"
