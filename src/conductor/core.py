@@ -52,6 +52,7 @@ class Conductor:
         log: Callable[..., None],
         clock: Callable[[], float] = time.time,
         choose: Callable[[list[str]], str] = random.choice,
+        request_ttl: float = DEFAULT_TTL,
         override_ttl: float = OVERRIDE_TTL,
     ):
         if default_mood not in moods:
@@ -63,6 +64,7 @@ class Conductor:
         self.log = log
         self.clock = clock
         self.choose = choose
+        self.request_ttl = request_ttl
         self.override_ttl = override_ttl
 
         self.requests: dict[str, Request] = {}
@@ -73,7 +75,8 @@ class Conductor:
 
     # --- agents -----------------------------------------------------------
 
-    def request(self, requester: str, mood: str, reason: str, ttl: float = DEFAULT_TTL) -> None:
+    def request(self, requester: str, mood: str, reason: str, ttl: float | None = None) -> None:
+        ttl = ttl or self.request_ttl
         if mood not in self.moods:
             raise ValueError(f"unknown mood {mood!r}, expected one of {sorted(self.moods)}")
         now = self.clock()
