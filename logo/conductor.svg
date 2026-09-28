@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Conductor</title>
+  <!-- Tile -->
+  <rect width="256" height="256" rx="56" fill="#134E4A"/>
+  <!-- An eighth note whose stem is a conductor's baton, leaning forward mid-gesture.
+       The flag is the sound wave the baton draws. -->
+  <g transform="translate(-4 8) rotate(12 128 128)">
+    <!-- Flag / sound wave: tapered ribbon, 22 wide at the stem, 13 at the rounded tail -->
+    <path fill="#FF6B35" d="M159.4 56.4 C194.7 67.7 216.1 84.7 196.7 115.1 C183.4 135.4 189.2 165.4 207.7 180.9 A6.5 6.5 0 0 0 216.3 171.1 C198.8 154.6 196.6 144.6 211.2 125 C231.9 95.3 201.3 48.3 166.6 35.6Z"/>
+    <!-- Baton: tapered shaft, overshooting the flag, with a rounded tip -->
+    <polygon fill="#FDF3E1" points="131.4,175.8 172.3,31.4 163.7,28.6 108.6,168.2"/>
+    <circle fill="#FDF3E1" cx="168" cy="30" r="4.5"/>
+    <!-- Note head, which is also the baton's grip -->
+    <ellipse fill="#FDF3E1" cx="94" cy="182" rx="38" ry="27" transform="rotate(-25 94 182)"/>
+  </g>
+</svg>

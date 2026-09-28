@@ -1,3 +1,5 @@
+<p align="center"><img src="logo/conductor.svg" width="128" alt="Conductor logo: a music note whose stem is a conductor's baton"></p>
+
 # Conductor
 
 Let your AI agents choose your music, and answer them with your keyboard's media keys (play/pause, stop, next, previous).
@@ -9,7 +11,8 @@ your streaming service. Your keyboard's media keys become feedback: like, dislik
 "wrong music for right now", pause everything. Every reaction is logged, so
 you can check whether the moods actually fit.
 
-**Status: early experiment.** Nothing runs yet. The design is in
+**Status: early experiment.** The daemon, the CLI and the YouTube Music backend
+are written and unit-tested; they have not yet driven a real player. The design is in
 [`docs/specs/2026-09-28-conductor-design.md`](docs/specs/2026-09-28-conductor-design.md).
 
 ## How it will work
